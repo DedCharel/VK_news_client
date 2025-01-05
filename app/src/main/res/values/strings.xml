@@ -1,4 +1,7 @@
 <resources>
     <string name="app_name">VK news client</string>
     <string name="template_text">кабаныч, когда узнал, что если сотрудникам не платить они начнут умирать от голода</string>
+    <string name="navigation_item_main">Главное</string>
+    <string name="navigation_item_favourite">Избраное</string>
+    <string name="navigation_item_profile">Профиль</string>
 </resources>

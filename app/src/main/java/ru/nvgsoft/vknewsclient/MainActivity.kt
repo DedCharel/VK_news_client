@@ -38,167 +38,19 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import ru.nvgsoft.vknewsclient.ui.theme.MainScreen
+import ru.nvgsoft.vknewsclient.ui.theme.VkNewsClientTheme
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-//            VkNewsClientTheme {
-//                // A surface container using the 'background' color from the theme
-//                Box(
-//                    modifier = Modifier
-//                        .fillMaxSize()
-//                        .background(MaterialTheme.colorScheme.background)
-//                        .padding(8.dp),
-//                ) {
-//                    PostCard()
-//                }
-//            }
-            Test2()
-        }
-    }
-}
-
-@Composable
-private fun Test() {
-    Box(
-        modifier = Modifier.fillMaxSize(),
-        contentAlignment = Alignment.Center
-    ) {
-        Example3()
-    }
-}
-
-@Composable
-private fun Example1() {
-    OutlinedButton(onClick = { /*TODO*/ }, shape = RoundedCornerShape(4.dp)) {
-        Text(text = "Hello world")
-    }
-}
-
-@Composable
-private fun Example2() {
-    TextField(
-        value = "Value",
-        onValueChange = {},
-        label = { Text(text = "Label") },
-    )
-}
-
-@Composable
-private fun Example3() {
-    val openAlertDialog = remember {
-        mutableStateOf(true)
-    }
-
-    when {
-        openAlertDialog.value -> {
-            AlertDialog(
-                onDismissRequest = { openAlertDialog.value = false },
-                confirmButton = {
-                    Text(text = "Yes")
-                },
-                dismissButton = {
-                    Text(text = "No")
-                },
-                title = {
-                    Text(text = "Are you sure?")
-                },
-                text = {
-                    Text(text = "Do you want to delete this file?")
-                },
-            )
-        }
-    }
-
-
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-private fun Test2() {
-    ModalNavigationDrawer(
-        drawerContent = {
-            ModalDrawerSheet {
-                NavigationDrawerItem(
-                    label = { Text(text = " Text 1") },
-                    selected = true,
-                    onClick = {},
-                    icon = { Icon(Icons.Filled.Call, contentDescription = null) }
-                        )
-                        Spacer(modifier = Modifier.padding(8.dp))
-                        NavigationDrawerItem(
-                            label = { Text(text = " Text 2") },
-                            selected = true,
-                            onClick = {},
-                            icon = { Icon(Icons.Filled.Email, contentDescription = null) }
-                        )
-                        Spacer(modifier = Modifier.padding(8.dp))
-                        NavigationDrawerItem(
-                            label = { Text(text = " Text 3") },
-                            selected = true,
-                            onClick = {},
-                            icon = { Icon(Icons.Filled.Place, contentDescription = null) }
-                        )
-                        Spacer(modifier = Modifier.padding(8.dp))
-                        Text(text = "Another simple text for show test!")
-                    }
+            VkNewsClientTheme {
+                MainScreen()
             }
-            ) {
-            Scaffold(
-                topBar = {
-                    TopAppBar(
-                        title = {
-                            Text(text = "TopAppBar title")
-                        },
-                        navigationIcon = {
-                            IconButton(onClick = {}) {
-                                Icon(Icons.Filled.Menu, contentDescription = null)
-                            }
-                        }
-                    )
-                },
-                bottomBar = {
-                    NavigationBar {
-                        NavigationBarItem(
-                            selected = true,
-                            onClick = {},
-                            icon = {
-                                Icon(Icons.Outlined.Edit, contentDescription = null)
-                            },
-                            label = {
-                                Text(text = "Edit")
-                            }
-                        )
-                        NavigationBarItem(
-                            selected = true,
-                            onClick = {},
-                            icon = {
-                                Icon(Icons.Filled.Favorite, contentDescription = null)
-                            },
-                            label = {
-                                Text(text = "Favorite")
-                            }
-                        )
-                        NavigationBarItem(
-                            selected = true,
-                            onClick = {},
-                            icon = {
-                                Icon(Icons.Outlined.Delete, contentDescription = null)
-                            },
-                            label = {
-                                Text(text = "Delete")
-                            }
-                        )
-                    }
-                }
-            ) {
-                Text(
-                    modifier = Modifier.padding(it),
-                    text = "This is scaffold content",
-                )
-            }
-        }
 
+        }
+    }
 }
+
 
