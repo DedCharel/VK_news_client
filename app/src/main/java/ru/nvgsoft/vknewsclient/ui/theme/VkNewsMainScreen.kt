@@ -1,6 +1,7 @@
 package ru.nvgsoft.vknewsclient.ui.theme
 
 import android.annotation.SuppressLint
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material3.FloatingActionButton
@@ -19,44 +20,52 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
+import ru.nvgsoft.vknewsclient.domain.FeedPost
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun MainScreen() {
-    val snackbarHostState = remember {
-        SnackbarHostState()
-    }
-    val scope = rememberCoroutineScope()
-    val fabIsVisible = rememberSaveable {
-        mutableStateOf(true)
+//    val snackbarHostState = remember {
+//        SnackbarHostState()
+//    }
+//    val scope = rememberCoroutineScope()
+//    val fabIsVisible = rememberSaveable {
+//        mutableStateOf(true)
+//    }
+
+    val feedPost = remember {
+        mutableStateOf(FeedPost())
     }
 
     Scaffold(
-        snackbarHost = {
-            SnackbarHost(hostState = snackbarHostState)
-        },
-        floatingActionButton = {
-            if (fabIsVisible.value){
-                FloatingActionButton(
-                    onClick = {
-                        scope.launch {
-                            val action = snackbarHostState.showSnackbar(
-                                "This is snackbar",
-                                actionLabel = "Hide FAB",
-                                duration = SnackbarDuration.Long
-                            )
-                            if (action == SnackbarResult.ActionPerformed){
-                                fabIsVisible.value = false
-                            }
-                        }
-                    }) {
-                    Icon(imageVector = Icons.Filled.Favorite, contentDescription = null)
-                }
-            }
+//        snackbarHost = {
+//            SnackbarHost(hostState = snackbarHostState)
+//        },
+//        floatingActionButton = {
+//            if (fabIsVisible.value){
+//                FloatingActionButton(
+//                    onClick = {
+//                        scope.launch {
+//                            val action = snackbarHostState.showSnackbar(
+//                                "This is snackbar",
+//                                actionLabel = "Hide FAB",
+//                                duration = SnackbarDuration.Long
+//                            )
+//                            if (action == SnackbarResult.ActionPerformed){
+//                                fabIsVisible.value = false
+//                            }
+//                        }
+//                    }) {
+//                    Icon(imageVector = Icons.Filled.Favorite, contentDescription = null)
+//                }
+//            }
+//
+//        },
 
-        },
         bottomBar = {
             NavigationBar(
                 containerColor = MaterialTheme.colorScheme.primary
@@ -84,6 +93,23 @@ fun MainScreen() {
                 }
             }
         }) {
-
+        PostCard(
+            modifier = Modifier.padding(8.dp),
+            feedPost = feedPost.value,
+            onStatisticItemClickListener = { newItem ->
+                val oldStatistics = feedPost.value.statistics
+                val newStatistics = oldStatistics.toMutableList().apply {
+                    replaceAll { oldItem ->
+                        if (oldItem.type == newItem.type) {
+                            oldItem.copy(count = oldItem.count + 1)
+                        }
+                        else {
+                            oldItem
+                        }
+                    }
+                }
+                feedPost.value = feedPost.value.copy(statistics = newStatistics)
+            }
+        )
     }
 }
