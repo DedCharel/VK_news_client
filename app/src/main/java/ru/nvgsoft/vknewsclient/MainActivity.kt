@@ -3,6 +3,7 @@ package ru.nvgsoft.vknewsclient
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.viewModels
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -42,11 +43,13 @@ import ru.nvgsoft.vknewsclient.ui.theme.MainScreen
 import ru.nvgsoft.vknewsclient.ui.theme.VkNewsClientTheme
 
 class MainActivity : ComponentActivity() {
+    private val viewModel by viewModels<MainViewModel>()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
             VkNewsClientTheme {
-                MainScreen()
+                MainScreen(viewModel)
             }
 
         }
