@@ -1,32 +1,31 @@
 package ru.nvgsoft.vknewsclient.ui.theme
 
 import android.annotation.SuppressLint
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Favorite
-import androidx.compose.material3.FloatingActionButton
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SnackbarDuration
-import androidx.compose.material3.SnackbarHost
-import androidx.compose.material3.SnackbarHostState
-import androidx.compose.material3.SnackbarResult
+import androidx.compose.material3.SwipeToDismissBox
+import androidx.compose.material3.SwipeToDismissBoxState
+import androidx.compose.material3.SwipeToDismissBoxValue
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import kotlinx.coroutines.launch
 import ru.nvgsoft.vknewsclient.MainViewModel
-import ru.nvgsoft.vknewsclient.domain.FeedPost
+import ru.nvgsoft.vknewsclient.domain.StatisticItem
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
@@ -59,15 +58,55 @@ fun MainScreen(viewModel: MainViewModel) {
                     )
                 }
             }
-        }) {
-        val feedPost = viewModel.feedPost.observeAsState(FeedPost())
-        PostCard(
-            modifier = Modifier.padding(8.dp),
-            feedPost = feedPost.value,
-            onLikeClickListener =  viewModel::updateCount,
-            onShareClickListener = viewModel::updateCount,
-            onViewsClickListener = viewModel::updateCount,
-            onCommentClickListener = viewModel::updateCount
-        )
+        }) {paddingValues ->
+        val feedPosts = viewModel.feedPosts.observeAsState(listOf())
+        LazyColumn(
+            modifier = Modifier.padding(paddingValues)
+        ) {
+            items(feedPosts.value, key = { it.id }) { feedPost ->
+                val dismissThresholds = with(receiver = LocalDensity.current) {
+                    LocalConfiguration.current.screenWidthDp.dp.toPx() * 0.5F
+                }
+                val dismissState = SwipeToDismissBoxState(
+                    initialValue = SwipeToDismissBoxValue.Settled,
+                    density = LocalDensity.current,
+                    confirmValueChange = { value ->
+                        val isDismissed = value in setOf(
+                            SwipeToDismissBoxValue.EndToStart,
+                        )
+                        if (isDismissed) {
+                            viewModel.remove(feedPost)
+                            true
+                        }
+                        false
+                    },
+                    positionalThreshold = { dismissThresholds }
+                )
+                SwipeToDismissBox(
+                    state = dismissState,
+                    backgroundContent = {}) {
+                    PostCard(
+                        modifier = Modifier.padding(8.dp),
+                        feedPost = feedPost,
+                        onLikeClickListener = { statisticItem ->
+                            viewModel.updateCount(feedPost, statisticItem)
+                        },
+                        onShareClickListener = { statisticItem ->
+                            viewModel.updateCount(feedPost, statisticItem)
+                        },
+                        onViewsClickListener = { statisticItem ->
+                            viewModel.updateCount(feedPost, statisticItem)
+                        },
+                        onCommentClickListener = { statisticItem ->
+                            viewModel.updateCount(feedPost, statisticItem)
+                        },
+                    )
+                }
+
+
+            }
+        }
+
+
     }
 }

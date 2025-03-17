@@ -72,7 +72,8 @@ fun PostCard(
                 onLikeClickListener = onLikeClickListener,
                 onShareClickListener = onShareClickListener,
                 onViewsClickListener = onViewsClickListener,
-                onCommentClickListener = onCommentClickListener)
+                onCommentClickListener = onCommentClickListener
+            )
         }
     }
 }
@@ -116,7 +117,7 @@ fun PostHeader(
 @Composable
 fun Statistic(
     statistics: List<StatisticItem>,
-    onLikeClickListener: (StatisticItem) -> Unit,
+    onLikeClickListener: ( StatisticItem) -> Unit,
     onShareClickListener: (StatisticItem) -> Unit,
     onViewsClickListener: (StatisticItem) -> Unit,
     onCommentClickListener: (StatisticItem) -> Unit
