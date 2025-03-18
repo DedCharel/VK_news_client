@@ -83,6 +83,7 @@ fun MainScreen(viewModel: MainViewModel) {
                     positionalThreshold = { dismissThresholds }
                 )
                 SwipeToDismissBox(
+                    modifier = Modifier.animateItem(),
                     state = dismissState,
                     backgroundContent = {}) {
                     PostCard(

@@ -51,7 +51,7 @@ fun PostCard(
     ) {
         Column(
             modifier = Modifier
-                .verticalScroll(rememberScrollState())
+
                 .padding(8.dp)
         ) {
             PostHeader(feedPost)
