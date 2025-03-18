@@ -1,6 +1,7 @@
 package ru.nvgsoft.vknewsclient.ui.theme
 
 import android.annotation.SuppressLint
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.padding
@@ -16,10 +17,13 @@ import androidx.compose.material3.SwipeToDismissBoxState
 import androidx.compose.material3.SwipeToDismissBoxValue
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
@@ -30,25 +34,23 @@ import ru.nvgsoft.vknewsclient.domain.StatisticItem
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun MainScreen(viewModel: MainViewModel) {
-
+    val selectedItemPosition by viewModel.selectedNavItem.observeAsState(NavigationItem.Home)
     Scaffold(
         bottomBar = {
             NavigationBar(
                 containerColor = MaterialTheme.colorScheme.primary
             ) {
-                val selectedItemPosition = remember {
-                    mutableStateOf(0)
-                }
+
                 val items = listOf(
                     NavigationItem.Home,
                     NavigationItem.Favourite,
                     NavigationItem.Profile
                 )
 
-                items.forEachIndexed { index, item ->
+                items.forEach() { item ->
                     NavigationBarItem(
-                        selected = selectedItemPosition.value == index,
-                        onClick = { selectedItemPosition.value = index },
+                        selected = selectedItemPosition == item,
+                        onClick = { viewModel.selectNavItem(item) },
                         icon = {
                             Icon(item.icon, contentDescription = null)
                         },
@@ -58,56 +60,29 @@ fun MainScreen(viewModel: MainViewModel) {
                     )
                 }
             }
-        }) {paddingValues ->
-        val feedPosts = viewModel.feedPosts.observeAsState(listOf())
-        LazyColumn(
-            modifier = Modifier.padding(paddingValues)
-        ) {
-            items(feedPosts.value, key = { it.id }) { feedPost ->
-                val dismissThresholds = with(receiver = LocalDensity.current) {
-                    LocalConfiguration.current.screenWidthDp.dp.toPx() * 0.5F
-                }
-                val dismissState = SwipeToDismissBoxState(
-                    initialValue = SwipeToDismissBoxValue.Settled,
-                    density = LocalDensity.current,
-                    confirmValueChange = { value ->
-                        val isDismissed = value in setOf(
-                            SwipeToDismissBoxValue.EndToStart,
-                        )
-                        if (isDismissed) {
-                            viewModel.remove(feedPost)
-                            true
-                        }
-                        false
-                    },
-                    positionalThreshold = { dismissThresholds }
-                )
-                SwipeToDismissBox(
-                    modifier = Modifier.animateItem(),
-                    state = dismissState,
-                    backgroundContent = {}) {
-                    PostCard(
-                        modifier = Modifier.padding(8.dp),
-                        feedPost = feedPost,
-                        onLikeClickListener = { statisticItem ->
-                            viewModel.updateCount(feedPost, statisticItem)
-                        },
-                        onShareClickListener = { statisticItem ->
-                            viewModel.updateCount(feedPost, statisticItem)
-                        },
-                        onViewsClickListener = { statisticItem ->
-                            viewModel.updateCount(feedPost, statisticItem)
-                        },
-                        onCommentClickListener = { statisticItem ->
-                            viewModel.updateCount(feedPost, statisticItem)
-                        },
-                    )
-                }
-
-
+        }) { paddingValues ->
+        when (selectedItemPosition) {
+            NavigationItem.Home -> {
+                HomeScreen(viewModel = viewModel, paddingValues = paddingValues)
             }
+
+            NavigationItem.Favourite -> TextCounter(name = "Favorite")
+            NavigationItem.Profile -> TextCounter(name = "Profile")
         }
-
-
     }
+
+
+}
+
+@Composable
+private fun TextCounter(name: String) {
+    var count by remember {
+        mutableStateOf(0)
+    }
+
+    Text(
+        modifier = Modifier.clickable { count++ },
+        text = "$name Count: $count",
+        color = Color.Black
+    )
 }
