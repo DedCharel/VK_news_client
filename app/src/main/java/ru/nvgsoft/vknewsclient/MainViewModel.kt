@@ -19,11 +19,7 @@ class MainViewModel : ViewModel() {
 
 
     private val _selectedNavItem = MutableLiveData<NavigationItem>(NavigationItem.Home)
-    val selectedNavItem: LiveData<NavigationItem> = _selectedNavItem
 
-    fun selectNavItem(navigationItem: NavigationItem){
-        _selectedNavItem.value = navigationItem
-    }
 
     private val _feedPosts = MutableLiveData<List<FeedPost>>(initialList)
     val feedPosts: LiveData<List<FeedPost>> = _feedPosts
