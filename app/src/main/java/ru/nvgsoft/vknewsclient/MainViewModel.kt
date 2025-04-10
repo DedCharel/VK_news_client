@@ -16,11 +16,7 @@ class MainViewModel : ViewModel() {
             )
         }
     }
-
-
-    private val _selectedNavItem = MutableLiveData<NavigationItem>(NavigationItem.Home)
-
-
+ 
     private val _feedPosts = MutableLiveData<List<FeedPost>>(initialList)
     val feedPosts: LiveData<List<FeedPost>> = _feedPosts
 

@@ -21,6 +21,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -33,6 +34,7 @@ import androidx.navigation.compose.rememberNavController
 import ru.nvgsoft.vknewsclient.MainViewModel
 import ru.nvgsoft.vknewsclient.domain.StatisticItem
 import ru.nvgsoft.vknewsclient.navigation.AppNavGraph
+import ru.nvgsoft.vknewsclient.navigation.Screen
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
@@ -54,7 +56,15 @@ fun MainScreen(viewModel: MainViewModel) {
                 items.forEach() { item ->
                     NavigationBarItem(
                         selected = currentRoute == item.screen.route,
-                        onClick = {navHostController.navigate(item.screen.route) },
+                        onClick = {
+                            navHostController.navigate(item.screen.route) {
+                                popUpTo(Screen.NewsFeed.route) {
+                                    saveState = true
+                                }
+                                launchSingleTop = true
+                                restoreState = true
+                            }
+                        },
                         icon = {
                             Icon(item.icon, contentDescription = null)
                         },
@@ -67,9 +77,14 @@ fun MainScreen(viewModel: MainViewModel) {
         }) { paddingValues ->
         AppNavGraph(
             navHostController = navHostController,
-            homeScreenContent = { HomeScreen(viewModel = viewModel, paddingValues = paddingValues)},
-            favouriteScreenContent = { TextCounter(name = "Favorite")},
-            profileScreenContent = {TextCounter(name = "Profile")})
+            homeScreenContent = {
+                HomeScreen(
+                    viewModel = viewModel,
+                    paddingValues = paddingValues
+                )
+            },
+            favouriteScreenContent = { TextCounter(name = "Favorite") },
+            profileScreenContent = { TextCounter(name = "Profile") })
     }
 
 
@@ -77,7 +92,7 @@ fun MainScreen(viewModel: MainViewModel) {
 
 @Composable
 private fun TextCounter(name: String) {
-    var count by remember {
+    var count by rememberSaveable {
         mutableStateOf(0)
     }
 
