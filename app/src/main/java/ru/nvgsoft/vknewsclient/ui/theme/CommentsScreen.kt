@@ -34,23 +34,25 @@ import ru.nvgsoft.vknewsclient.domain.PostComment
 @Composable
 fun CommentsScreen(
     feedPost: FeedPost,
-    comments: List<PostComment>
+    comments: List<PostComment>,
+    onBackPressed: () -> Unit
 ) {
     Scaffold(
         topBar = {
             TopAppBar(title = {
                 Text(text = "Comments for FeedPost Id: ${feedPost.id}")
-                },
+            },
                 navigationIcon = {
-                    IconButton(onClick = {  }) {
+                    IconButton(onClick = { onBackPressed() }) {
                         Icon(
                             imageVector = Icons.Filled.ArrowBack,
-                            contentDescription = null)
+                            contentDescription = null
+                        )
                     }
                 }
             )
         }
-    ) {paddingValues ->
+    ) { paddingValues ->
         LazyColumn(
             modifier = Modifier.padding(paddingValues),
             contentPadding = PaddingValues(
@@ -63,7 +65,7 @@ fun CommentsScreen(
             items(
                 items = comments,
                 key = { it.id }
-            ){ comment ->
+            ) { comment ->
                 CommentItem(comment = comment)
 
             }
@@ -75,18 +77,18 @@ fun CommentsScreen(
 @Composable
 fun CommentItem(
     comment: PostComment
-){
-    Row (
+) {
+    Row(
         modifier = Modifier
             .fillMaxWidth()
             .padding(
                 horizontal = 16.dp,
                 vertical = 4.dp
             )
-    ){
+    ) {
         Image(
             modifier = Modifier.size(24.dp),
-            painter = painterResource(id = comment.authorAvatarId) ,
+            painter = painterResource(id = comment.authorAvatarId),
             contentDescription = null
         )
         Spacer(modifier = Modifier.size(8.dp))
@@ -116,7 +118,7 @@ fun CommentItem(
 
 @Preview
 @Composable
-fun PreviewComments(){
+fun PreviewComments() {
     VkNewsClientTheme {
         CommentItem(comment = PostComment(id = 0))
     }
