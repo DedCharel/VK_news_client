@@ -22,6 +22,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import ru.nvgsoft.vknewsclient.NewsFeedViewModel
 import ru.nvgsoft.vknewsclient.domain.FeedPost
 import ru.nvgsoft.vknewsclient.navigation.AppNavGraph
+import ru.nvgsoft.vknewsclient.navigation.Screen
 import ru.nvgsoft.vknewsclient.navigation.rememberNavigationState
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
@@ -61,25 +62,26 @@ fun MainScreen() {
         }) { paddingValues ->
         AppNavGraph(
             navHostController = navigationState.navHostController,
-            homeScreenContent = {
-                if (commentsToPost.value == null){
-                    HomeScreen(
-                        paddingValues = paddingValues,
-                        onCommentClickListener = {
-                            commentsToPost.value = it
-                        }
-                    )
-                } else {
-                    CommentsScreen (
-                        onBackPressed = {commentsToPost.value = null},
-                        feedPost = commentsToPost.value!!
-
-                    )
-                }
-
+            newsFeedScreenContent = {
+                HomeScreen(
+                    paddingValues = paddingValues,
+                    onCommentClickListener = {
+                        commentsToPost.value = it
+                        navigationState.navigateTo(Screen.Comments.route)
+                    }
+                )
             },
-            favouriteScreenContent = { TextCounter(name = "Favorite") },
-            profileScreenContent = { TextCounter(name = "Profile") })
+            commentsScreenContent = {
+                CommentsScreen(
+                    onBackPressed = {
+                        commentsToPost.value = null
+                    },
+                    feedPost = commentsToPost.value!!
+                )
+            },
+            favouriteScreenContent = { TextCounter(name = "Favourite") },
+            profileScreenContent = { TextCounter(name = "Profile") }
+        )
     }
 
 

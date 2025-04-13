@@ -10,8 +10,8 @@ class NavigationState(
 ) {
 
     fun navigateTo(rout: String){
-        navHostController.navigate(navHostController.graph.startDestinationId) {
-            popUpTo(Screen.NewsFeed.route) {
+        navHostController.navigate(rout) {
+            popUpTo(navHostController.graph.startDestinationId) {
                 saveState = true
             }
             launchSingleTop = true
