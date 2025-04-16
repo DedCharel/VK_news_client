@@ -1,5 +1,7 @@
 package ru.nvgsoft.vknewsclient.navigation
 
+import android.net.Uri
+import com.google.gson.Gson
 import ru.nvgsoft.vknewsclient.domain.FeedPost
 
 sealed class Screen (
@@ -13,7 +15,8 @@ sealed class Screen (
 
         private const val ROUTE_FOR_ARGS = "comments"
         fun getRouteWithArgs(feedPost: FeedPost): String{
-            return "$ROUTE_FOR_ARGS/${feedPost.id}/${feedPost.contentText}"
+            val feedPostGson = Gson().toJson(feedPost)
+            return "$ROUTE_FOR_ARGS/${feedPostGson.encode()}"
         }
     }
     object Home: Screen(ROUTE_HOME)
@@ -21,13 +24,17 @@ sealed class Screen (
 
     companion object{
 
-        const val KEY_FEED_POST_ID = "feed_post_id"
-        const val KEY_CONTENT_TEXT = "content_text"
+       const val KEY_FEED_POST = "feed_post"
 
         const val ROUTE_HOME = "home"
-        const val ROUTE_COMMENTS = "comments/{$KEY_FEED_POST_ID}/{$KEY_CONTENT_TEXT}"
+        const val ROUTE_COMMENTS = "comments/{$KEY_FEED_POST}"
         const val ROUTE_NEWS_FEED = "news_feed"
         const val ROUTE_FAVOURITE = "favourite"
         const val ROUTE_PROFILE = "profile"
     }
+}
+
+//Экранируем спецсимволы
+fun String.encode(): String {
+    return Uri.encode(this)
 }
