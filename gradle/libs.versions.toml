@@ -12,6 +12,7 @@ runtimeLivedata = "1.7.8"
 navigation_version = "2.8.5"
 gson_version="2.11.0"
 coil_version="3.0.4"
+vk_version="4.1.0"
 
 
 [libraries]
@@ -37,6 +38,10 @@ navigation-compose = { group = "androidx.navigation", name = "navigation-compose
 gson = {group = "com.squareup.retrofit2", name = "converter-gson", version.ref ="gson_version"}
 #Coil
 coil = {group = "io.coil-kt.coil3", name = "coil-compose", version.ref ="coil_version"}
+#VK базовая функциональность
+vk-core = {group = "com.vk", name = "android-sdk-core", version.ref ="vk_version"}
+#VK сгенерированные модели и методы
+vk-api = {group = "com.vk", name = "android-sdk-api", version.ref ="vk_version"}
 
 
 [plugins]

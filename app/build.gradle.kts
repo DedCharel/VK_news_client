@@ -77,4 +77,8 @@ dependencies {
     //Coil
     implementation(libs.coil)
 
+    //vk
+    implementation(libs.vk.core)
+    implementation(libs.vk.api)
+
 }
