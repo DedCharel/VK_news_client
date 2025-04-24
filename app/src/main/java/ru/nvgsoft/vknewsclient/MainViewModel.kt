@@ -1,10 +1,14 @@
 package ru.nvgsoft.vknewsclient
 
+import android.content.Context
+import android.util.Log
+import androidx.core.content.edit
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.vk.api.sdk.VK
-import com.vk.api.sdk.auth.VKAuthenticationResult
+import com.vk.id.AccessToken
+import com.vk.id.VKID
+import com.vk.id.VKIDAuthFail
 import ru.nvgsoft.vknewsclient.ui.theme.AuthState
 
 class MainViewModel: ViewModel() {
@@ -13,14 +17,51 @@ class MainViewModel: ViewModel() {
     val authState: LiveData<AuthState> = _authState
 
     init {
-        _authState.value = if (VK.isLoggedIn()) AuthState.Authorized else AuthState.NotAuthorized
-    }
+        val token = VKID.instance.accessToken?.token
 
-    fun performAuthResult(result: VKAuthenticationResult){
-        if (result is VKAuthenticationResult.Success){
+        if (token != null) {
             _authState.value = AuthState.Authorized
         } else {
             _authState.value = AuthState.NotAuthorized
         }
     }
+
+    fun saveToken(context: Context, token: AccessToken) {
+        saveToken(context, token.token)
+    }
+
+    fun performAuthResult(state: AuthState) {
+        _authState.value = state
+    }
+
+    fun setFail(fail: VKIDAuthFail) {
+        when (fail) {
+            is VKIDAuthFail.Canceled -> Log.d("LoginScreen", "Failed Canceled")
+            is VKIDAuthFail.FailedApiCall -> Log.d("LoginScreen", "Failed ApiCall")
+            is VKIDAuthFail.FailedOAuthState -> Log.d(
+                "LoginScreen",
+                "Failed OAuthState"
+            )
+
+            is VKIDAuthFail.FailedRedirectActivity -> Log.d(
+                "LoginScreen",
+                "Failed RedirectActivity"
+            )
+
+            is VKIDAuthFail.NoBrowserAvailable -> Log.d(
+                "LoginScreen",
+                "NoBrowserAvailable"
+            )
+
+            else -> Log.d("LoginScreen", "Another Error")
+        }
+
+    }
+
+}
+
+private fun saveToken(context: Context, token: String) {
+    val sharedPreferences =
+        context.getSharedPreferences("user_preferences", Context.MODE_PRIVATE)
+    sharedPreferences.edit() { putString("user_token", token) }
 }

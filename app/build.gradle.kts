@@ -2,6 +2,8 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
     alias(libs.plugins.kotlin.parcelize)
+    id("vkid.manifest.placeholders")
+
 }
 
 android {
@@ -19,6 +21,16 @@ android {
         vectorDrawables {
             useSupportLibrary = true
         }
+
+
+        addManifestPlaceholders(
+            mapOf(
+                "VKIDClientID" to "53466689", // ID вашего приложения (app_id).
+                "VKIDClientSecret" to "ZFmkjHoS8S80VuhGv3Qa", // Ваш защищенный ключ (client_secret).
+                "VKIDRedirectHost" to "vk.com", // Обычно используется vk.com.
+                "VKIDRedirectScheme" to "vk53466689", // Обычно используется vk{ID приложения}.
+            )
+        )
     }
 
     buildTypes {
@@ -31,11 +43,12 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
+        isCoreLibraryDesugaringEnabled = true
     }
     kotlinOptions {
-        jvmTarget = "1.8"
+        jvmTarget = "17"
     }
     buildFeatures {
         compose = true
@@ -80,5 +93,11 @@ dependencies {
     //vk
     implementation(libs.vk.core)
     implementation(libs.vk.api)
+
+    val sdkVersion = "2.3.1"
+    implementation("com.vk.id:vkid:${sdkVersion}")
+    implementation("com.vk.id:onetap-compose:${sdkVersion}")
+    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.5")
+
 
 }
