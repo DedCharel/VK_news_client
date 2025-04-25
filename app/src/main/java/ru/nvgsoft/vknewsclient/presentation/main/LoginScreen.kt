@@ -1,4 +1,4 @@
-package ru.nvgsoft.vknewsclient.ui.theme
+package ru.nvgsoft.vknewsclient.presentation.main
 
 import android.content.Context
 import android.util.Log
@@ -18,7 +18,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.vk.id.onetap.compose.onetap.OneTap
 import com.vk.id.onetap.compose.onetap.OneTapTitleScenario
-import ru.nvgsoft.vknewsclient.MainViewModel
 import ru.nvgsoft.vknewsclient.R
 
 @Composable

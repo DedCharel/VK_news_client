@@ -1,4 +1,4 @@
-package ru.nvgsoft.vknewsclient
+package ru.nvgsoft.vknewsclient.presentation.main
 
 import android.content.Context
 import android.util.Log
@@ -9,7 +9,6 @@ import androidx.lifecycle.ViewModel
 import com.vk.id.AccessToken
 import com.vk.id.VKID
 import com.vk.id.VKIDAuthFail
-import ru.nvgsoft.vknewsclient.ui.theme.AuthState
 
 class MainViewModel: ViewModel() {
 

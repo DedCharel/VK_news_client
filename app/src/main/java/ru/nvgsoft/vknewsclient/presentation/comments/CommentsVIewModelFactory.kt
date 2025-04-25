@@ -1,4 +1,4 @@
-package ru.nvgsoft.vknewsclient
+package ru.nvgsoft.vknewsclient.presentation.comments
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider

@@ -1,4 +1,4 @@
-package ru.nvgsoft.vknewsclient.ui.theme
+package ru.nvgsoft.vknewsclient.presentation.main
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Favorite
