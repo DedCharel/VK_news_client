@@ -13,6 +13,8 @@ navigation_version = "2.8.5"
 gson_version="2.11.0"
 coil_version="3.0.4"
 vk_version="4.1.0"
+okHttpClient_version="4.12.0"
+retrofit_version="2.11.0"
 
 
 [libraries]
@@ -38,10 +40,22 @@ navigation-compose = { group = "androidx.navigation", name = "navigation-compose
 gson = {group = "com.squareup.retrofit2", name = "converter-gson", version.ref ="gson_version"}
 #Coil
 coil = {group = "io.coil-kt.coil3", name = "coil-compose", version.ref ="coil_version"}
+#Coil compose
+coil-compose = {group = "io.coil-kt.coil3", name = "coil-compose", version.ref ="coil_version"}
+#Coil сеть
+coil-network = {group = "io.coil-kt.coil3", name = "coil-network-okhttp", version.ref ="coil_version"}
 #VK базовая функциональность
 vk-core = {group = "com.vk", name = "android-sdk-core", version.ref ="vk_version"}
 #VK сгенерированные модели и методы
 vk-api = {group = "com.vk", name = "android-sdk-api", version.ref ="vk_version"}
+
+#OkHttpClient
+okHttpClient = {group = "com.squareup.okhttp3", name = "okhttp", version.ref ="okHttpClient_version"}
+#HttpLoggingInterceptor
+httpLoggingInterceptor = {group = "com.squareup.okhttp3", name = "logging-interceptor", version.ref ="okHttpClient_version"}
+
+#Retrofit
+retrofit = {group = "com.squareup.retrofit2", name = "retrofit", version.ref ="retrofit_version"}
 
 
 [plugins]

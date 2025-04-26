@@ -1,66 +1,78 @@
 package ru.nvgsoft.vknewsclient.presentation.main
 
+import android.app.Application
 import android.content.Context
 import android.util.Log
 import androidx.core.content.edit
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.vk.id.AccessToken
 import com.vk.id.VKID
 import com.vk.id.VKIDAuthFail
+import com.vk.id.auth.VKIDAuthCallback
+import com.vk.id.auth.VKIDAuthParams
+import com.vk.id.refresh.VKIDRefreshTokenCallback
+import com.vk.id.refresh.VKIDRefreshTokenFail
+import kotlinx.coroutines.launch
 
-class MainViewModel: ViewModel() {
+class MainViewModel(application: Application): AndroidViewModel(application) {
 
     private val _authState = MutableLiveData<AuthState>(AuthState.Initial)
     val authState: LiveData<AuthState> = _authState
 
-    init {
-        val token = VKID.instance.accessToken?.token
-
-        if (token != null) {
+    private val vkAuthCallback = object : VKIDAuthCallback{
+        override fun onAuth(accessToken: AccessToken) {
             _authState.value = AuthState.Authorized
-        } else {
+            saveToken(application, accessToken.token )
+            Log.d("MainViewModel", "onAuth")
+        }
+
+        override fun onFail(fail: VKIDAuthFail) {
             _authState.value = AuthState.NotAuthorized
+            Log.d("MainViewModel", "onFail")
         }
     }
 
-    fun saveToken(context: Context, token: AccessToken) {
-        saveToken(context, token.token)
-    }
-
-    fun performAuthResult(state: AuthState) {
-        _authState.value = state
-    }
-
-    fun setFail(fail: VKIDAuthFail) {
-        when (fail) {
-            is VKIDAuthFail.Canceled -> Log.d("LoginScreen", "Failed Canceled")
-            is VKIDAuthFail.FailedApiCall -> Log.d("LoginScreen", "Failed ApiCall")
-            is VKIDAuthFail.FailedOAuthState -> Log.d(
-                "LoginScreen",
-                "Failed OAuthState"
+    init {
+        viewModelScope.launch {
+            Log.d("MainViewModel", "Init")
+            VKID.instance.authorize(
+                callback = vkAuthCallback,
+                params = VKIDAuthParams {
+                    scopes = setOf(VK_SCOPE_WALL, VK_SCOPE_FRIENDS)
+                }
             )
-
-            is VKIDAuthFail.FailedRedirectActivity -> Log.d(
-                "LoginScreen",
-                "Failed RedirectActivity"
-            )
-
-            is VKIDAuthFail.NoBrowserAvailable -> Log.d(
-                "LoginScreen",
-                "NoBrowserAvailable"
-            )
-
-            else -> Log.d("LoginScreen", "Another Error")
+            Log.d("MainViewModel", "InitEnd")
         }
+    }
 
+
+
+//    private val vkRefreshTokenCallback = object : VKIDRefreshTokenCallback {
+//        override fun onFail(fail: VKIDRefreshTokenFail) {
+//            TODO("Not yet implemented")
+//        }
+//
+//        override fun onSuccess(token: AccessToken) {
+//            _authState.value = AuthState.Authorized
+//          //  saveToken(application, token.token)
+//        }
+//    }
+
+
+    private fun saveToken(context: Context, token: String) {
+        val sharedPreferences =
+            context.getSharedPreferences("user_preferences", Context.MODE_PRIVATE)
+        sharedPreferences.edit() { putString("user_token", token) }
+    }
+
+    companion object {
+        private const val VK_SCOPE_WALL = "wall"
+        private const val VK_SCOPE_FRIENDS = "friends"
     }
 
 }
 
-private fun saveToken(context: Context, token: String) {
-    val sharedPreferences =
-        context.getSharedPreferences("user_preferences", Context.MODE_PRIVATE)
-    sharedPreferences.edit() { putString("user_token", token) }
-}

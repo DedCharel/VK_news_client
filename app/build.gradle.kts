@@ -89,6 +89,10 @@ dependencies {
 
     //Coil
     implementation(libs.coil)
+    //Coil compose
+    implementation(libs.coil.compose)
+    //Coil сеть
+    implementation(libs.coil.network)
 
     //vk
     implementation(libs.vk.core)
@@ -98,6 +102,14 @@ dependencies {
     implementation("com.vk.id:vkid:${sdkVersion}")
     implementation("com.vk.id:onetap-compose:${sdkVersion}")
     coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.5")
+
+    //OkHttpClient
+    implementation(libs.okHttpClient)
+    //HttpLoggingInterceptor
+    implementation(libs.httpLoggingInterceptor)
+
+    //Retrofit
+    implementation(libs.retrofit)
 
 
 }

@@ -1,6 +1,7 @@
 package ru.nvgsoft.vknewsclient.presentation.main
 
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.runtime.livedata.observeAsState
@@ -18,18 +19,19 @@ class MainActivity : ComponentActivity() {
             VkNewsClientTheme {
                 val viewModel: MainViewModel = viewModel()
                 val authState = viewModel.authState.observeAsState(AuthState.Initial)
-
+                Log.d("VKMainActivity", "state")
                 when (authState.value) {
                     is AuthState.Authorized -> {
+                        Log.d("VkMainActivity", "Auth")
                         MainScreen()
                     }
 
                     is AuthState.NotAuthorized -> {
-                        LoginScreen(this, viewModel)
+                        Log.d("VkMainActivity", "NotAuth")
                     }
 
                     else -> {
-
+                        Log.d("VKMainActivity", "else")
                     }
                 }
 
