@@ -26,6 +26,7 @@ class MainViewModel(application: Application): AndroidViewModel(application) {
     private val vkAuthCallback = object : VKIDAuthCallback{
         override fun onAuth(accessToken: AccessToken) {
             _authState.value = AuthState.Authorized
+            Log.d("MainViewModel", "token: ${accessToken.token}")
             saveToken(application, accessToken.token )
             Log.d("MainViewModel", "onAuth")
         }
@@ -37,16 +38,23 @@ class MainViewModel(application: Application): AndroidViewModel(application) {
     }
 
     init {
-        viewModelScope.launch {
-            Log.d("MainViewModel", "Init")
-            VKID.instance.authorize(
-                callback = vkAuthCallback,
-                params = VKIDAuthParams {
-                    scopes = setOf(VK_SCOPE_WALL, VK_SCOPE_FRIENDS)
-                }
-            )
-            Log.d("MainViewModel", "InitEnd")
-        }
+//        val token = VKID.Companion.instance.accessToken?.token
+//        Log.d("MainViewModel", "token: $token")
+//        if(token != null){
+//            _authState.value = AuthState.Authorized
+//        }else{
+            viewModelScope.launch {
+                Log.d("MainViewModel", "Init")
+                VKID.instance.authorize(
+                    callback = vkAuthCallback,
+                    params = VKIDAuthParams {
+                        scopes = setOf(VK_SCOPE_WALL, VK_SCOPE_FRIENDS)
+                    }
+                )
+                Log.d("MainViewModel", "InitEnd")
+            }
+//       }
+
     }
 
 
