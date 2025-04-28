@@ -9,6 +9,8 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.vk.api.sdk.VKPreferencesKeyValueStorage
+import com.vk.api.sdk.auth.VKAccessToken
 import com.vk.id.AccessToken
 import com.vk.id.VKID
 import com.vk.id.VKIDAuthFail
@@ -17,6 +19,7 @@ import com.vk.id.auth.VKIDAuthParams
 import com.vk.id.refresh.VKIDRefreshTokenCallback
 import com.vk.id.refresh.VKIDRefreshTokenFail
 import kotlinx.coroutines.launch
+import ru.nvgsoft.vknewsclient.data.network.ApiFactory
 
 class MainViewModel(application: Application): AndroidViewModel(application) {
 
@@ -38,7 +41,7 @@ class MainViewModel(application: Application): AndroidViewModel(application) {
     }
 
     init {
-//        val token = VKID.Companion.instance.accessToken?.token
+//        val token = VKID.instance.accessToken?.token
 //        Log.d("MainViewModel", "token: $token")
 //        if(token != null){
 //            _authState.value = AuthState.Authorized
@@ -53,10 +56,9 @@ class MainViewModel(application: Application): AndroidViewModel(application) {
                 )
                 Log.d("MainViewModel", "InitEnd")
             }
-//       }
+  //     }
 
     }
-
 
 
 //    private val vkRefreshTokenCallback = object : VKIDRefreshTokenCallback {
