@@ -1,6 +1,5 @@
 package ru.nvgsoft.vknewsclient.presentation.news
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -12,7 +11,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
-import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.MoreVert
@@ -57,7 +55,7 @@ fun PostCard(
             Text(text = feedPost.contentText)
             Spacer(modifier = Modifier.height(8.dp))
             AsyncImage(
-                model = feedPost.communityImageUrl,
+                model = feedPost.contentImageUrl,
                 modifier = Modifier
                     .fillMaxWidth()
                     .wrapContentHeight(),
@@ -71,7 +69,7 @@ fun PostCard(
                 onShareClickListener = onShareClickListener,
                 onViewsClickListener = onViewsClickListener,
                 onCommentClickListener = onCommentClickListener,
-                feedPost.isFavourite
+                feedPost.isLiked
             )
         }
     }

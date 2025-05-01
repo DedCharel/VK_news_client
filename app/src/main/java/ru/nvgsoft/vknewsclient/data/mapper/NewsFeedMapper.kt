@@ -1,5 +1,6 @@
 package ru.nvgsoft.vknewsclient.data.mapper
 
+import android.util.Log
 import ru.nvgsoft.vknewsclient.data.model.NewsFeedResponseDto
 import ru.nvgsoft.vknewsclient.domain.FeedPost
 import ru.nvgsoft.vknewsclient.domain.StatisticItem
@@ -18,12 +19,15 @@ class NewsFeedMapper {
         val groups = responseDto.newsFeedContent.groups
 
         for (post in posts) {
-            val group = groups.find { it.id == post.communityId.absoluteValue } ?: break// absoluteValue берем для того чтобы убрать минус
+            if (post.id == null || post.id == 0L) continue
+            Log.d("Mapper", "${post.id}")
+            val group = groups.find { it.id == post.communityId.absoluteValue } // absoluteValue берем для того чтобы убрать минус
             val feedPost = FeedPost(
                 id = post.id,
-                communityName = group.name,
+                communityId = post.communityId,
+                communityName = group?.name ?: "",
                 publicationData = mapTimestampToData(post.date * 1000),
-                communityImageUrl = group.imageUrl,
+                communityImageUrl = group?.imageUrl ?: "",
                 contentText = post.text,
                 contentImageUrl = post.attachments?.firstOrNull()?.photo?.photoUrls?.lastOrNull()?.url,
                 statistics = listOf(
@@ -32,7 +36,7 @@ class NewsFeedMapper {
                     StatisticItem(type = StatisticType.SHARES, post.reposts.count),
                     StatisticItem(type = StatisticType.COMMENTS, post.comments.count)
                 ),
-                isFavourite = post.isFavourite
+                isLiked = post.likes.userLikes > 0
             )
             result.add(feedPost)
         }
