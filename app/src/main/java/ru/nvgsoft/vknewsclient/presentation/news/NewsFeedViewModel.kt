@@ -24,8 +24,8 @@ class NewsFeedViewModel(application: Application) : AndroidViewModel(application
     private val repository = NewsFeedRepository(application)
 
     init {
+        _screenState.value = NewsFeedScreenState.Loading
         loadPosts()
-        Log.d("NewsFeedViewModel", "Init")
     }
 
     private fun loadPosts(){
@@ -50,35 +50,6 @@ class NewsFeedViewModel(application: Application) : AndroidViewModel(application
         }
 
     }
-
-    fun updateCount(feedPost: FeedPost, item: StatisticItem) {
-        val currentState = screenState.value
-        if (currentState !is NewsFeedScreenState.Posts) return
-        val oldPosts = currentState.posts.toMutableList()
-        val oldStatistics = feedPost.statistics.toMutableList()
-        val newStatistics = oldStatistics.toMutableList().apply {
-            replaceAll { oldItem ->
-                if (oldItem.type == item.type) {
-                    oldItem.copy(count = oldItem.count + 1)
-                } else {
-                    oldItem
-                }
-            }
-        }
-        val newFeedPost = feedPost.copy(statistics = newStatistics)
-        val newPosts = oldPosts.apply {
-            replaceAll {
-                if (it == feedPost) {
-                    newFeedPost
-                } else {
-                    it
-                }
-            }
-        }
-        _screenState.value = NewsFeedScreenState.Posts(newPosts)
-
-    }
-
 
     fun remove(feedPost: FeedPost){
         viewModelScope.launch {
