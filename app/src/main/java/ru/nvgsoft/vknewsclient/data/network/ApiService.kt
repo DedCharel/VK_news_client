@@ -2,6 +2,7 @@ package ru.nvgsoft.vknewsclient.data.network
 
 import retrofit2.http.GET
 import retrofit2.http.Query
+import ru.nvgsoft.vknewsclient.data.model.CommentsResponseDto
 import ru.nvgsoft.vknewsclient.data.model.LikesCountResponseDto
 import ru.nvgsoft.vknewsclient.data.model.NewsFeedResponseDto
 
@@ -39,5 +40,12 @@ interface ApiService {
         @Query("owner_id") ownerId: Long,
         @Query("item_id") itemId: Long
     )
+
+    @GET("wall.getComments?v=5.199&extended=1&fields=photo_100")
+    suspend fun getComments(
+        @Query("access_token")token: String,
+        @Query("owner_id") ownerId: Long,
+        @Query("post_id") postId: Long
+    ): CommentsResponseDto
 
 }

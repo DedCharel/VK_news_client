@@ -7,6 +7,7 @@ import com.vk.id.VKID
 import ru.nvgsoft.vknewsclient.data.mapper.NewsFeedMapper
 import ru.nvgsoft.vknewsclient.data.network.ApiFactory
 import ru.nvgsoft.vknewsclient.domain.FeedPost
+import ru.nvgsoft.vknewsclient.domain.PostComment
 import ru.nvgsoft.vknewsclient.domain.StatisticItem
 import ru.nvgsoft.vknewsclient.domain.StatisticType
 
@@ -36,6 +37,15 @@ class NewsFeedRepository(application: Application) {
         val posts = mapper.mapResponseToPost(response)
         _feedPosts.addAll(posts)
         return feedPosts
+    }
+
+    suspend fun getComments(feedPost: FeedPost): List<PostComment>{
+        val response = apiService.getComments(
+            token = getAccessToken(),
+            ownerId = feedPost.communityId,
+            postId = feedPost.id
+        )
+        return mapper.mupResponseToComments(response)
     }
 
     private fun getAccessToken(): String {
