@@ -74,13 +74,17 @@ class NewsFeedRepository(application: Application) {
         nextDataNeededEvents.emit(Unit)
     }
 
-    suspend fun getComments(feedPost: FeedPost): List<PostComment> {
+    fun getComments(feedPost: FeedPost): Flow<List<PostComment>> = flow {
         val response = apiService.getComments(
             token = getAccessToken(),
             ownerId = feedPost.communityId,
             postId = feedPost.id
         )
-        return mapper.mupResponseToComments(response)
+        val result = mapper.mupResponseToComments(response)
+        emit(result)
+    }.retry {
+        delay(RETRY_TIMEOUT_MILES)
+        true
     }
 
     private fun getAccessToken(): String {

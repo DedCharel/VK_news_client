@@ -24,6 +24,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -52,7 +53,7 @@ fun CommentsScreen(
             feedPost,
             LocalContext.current.applicationContext as Application)
     )
-    val state = viewModel.screenState.observeAsState(CommentsScreenState.Initial)
+    val state = viewModel.screenState.collectAsState(CommentsScreenState.Initial)
     val currentState = state.value
     if (currentState is CommentsScreenState.Comments) {
         Scaffold(
