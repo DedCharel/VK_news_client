@@ -6,11 +6,13 @@ import com.vk.api.sdk.auth.VKAccessToken
 import com.vk.id.VKID
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.retry
 import kotlinx.coroutines.flow.stateIn
 import ru.nvgsoft.vknewsclient.data.mapper.NewsFeedMapper
 import ru.nvgsoft.vknewsclient.data.network.ApiFactory
@@ -46,6 +48,9 @@ class NewsFeedRepository(application: Application) {
             _feedPosts.addAll(posts)
             emit(feedPosts)
         }
+    }.retry {
+        delay(RETRY_TIMEOUT_MILES)
+        true
     }
 
     private val apiService = ApiFactory.apiService
@@ -119,5 +124,8 @@ class NewsFeedRepository(application: Application) {
         refreshedListFlow.emit(feedPosts)
     }
 
+    companion object {
+        private const val RETRY_TIMEOUT_MILES = 3000L
+    }
 
 }

@@ -1,8 +1,10 @@
 package ru.nvgsoft.vknewsclient.presentation.news
 
 import android.app.Application
+import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.flow
@@ -15,7 +17,9 @@ import ru.nvgsoft.vknewsclient.extensions.mergeWith
 
 class NewsFeedViewModel(application: Application) : AndroidViewModel(application) {
 
-
+    private val exceptionHandler = CoroutineExceptionHandler{_, _ ->
+        Log.d("NewsFeedViewModel", "Exception caught by exception handler ")
+    }
     private val repository = NewsFeedRepository(application)
     private val postsFlow = repository.posts
 
@@ -48,14 +52,14 @@ class NewsFeedViewModel(application: Application) : AndroidViewModel(application
     }
 
     fun changeLikeStatus(feedPost: FeedPost){
-        viewModelScope.launch {
+        viewModelScope.launch(exceptionHandler) {
             repository.changedLikeStatus(feedPost)
         }
 
     }
 
     fun remove(feedPost: FeedPost){
-        viewModelScope.launch {
+        viewModelScope.launch(exceptionHandler) {
             repository.deletePost(feedPost)
         }
 
