@@ -38,17 +38,11 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                     override fun onSuccess(user: VKIDUser) {
                         _authState.value = AuthState.Authorized
                     }
-
                     override fun onFail(fail: VKIDGetUserFail) {
                         when (fail) {
                             is VKIDGetUserFail.FailedApiCall -> vkAuthorize()
-                            is VKIDGetUserFail.IdTokenTokenExpired -> {
-                                refreshToken()
-                            }
-
-                            is VKIDGetUserFail.NotAuthenticated -> {
-                                vkAuthorize()
-                            }
+                            is VKIDGetUserFail.IdTokenTokenExpired ->   refreshToken()
+                            is VKIDGetUserFail.NotAuthenticated ->   vkAuthorize()
                         }
                     }
                 }
@@ -62,8 +56,6 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         override fun onAuth(accessToken: AccessToken) {
             _authState.value = AuthState.Authorized
             Log.d("MainViewModel", "token: ${accessToken.token}")
-            saveToken(application, accessToken.token)
-            Log.d("MainViewModel", "onAuth")
         }
 
         override fun onFail(fail: VKIDAuthFail) {
@@ -110,13 +102,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     }
 
 
-    private fun saveToken(context: Context, token: String) {
-        val sharedPreferences =
-            context.getSharedPreferences("user_preferences", Context.MODE_PRIVATE)
-        sharedPreferences.edit() { putString("user_token", token) }
-    }
-
-    companion object {
+   companion object {
         private const val VK_SCOPE_WALL = "wall"
         private const val VK_SCOPE_FRIENDS = "friends"
     }

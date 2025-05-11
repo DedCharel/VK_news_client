@@ -1,8 +1,6 @@
 package ru.nvgsoft.vknewsclient.data.repository
 
 import android.app.Application
-import com.vk.api.sdk.VKPreferencesKeyValueStorage
-import com.vk.api.sdk.auth.VKAccessToken
 import com.vk.id.VKID
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -16,16 +14,17 @@ import kotlinx.coroutines.flow.retry
 import kotlinx.coroutines.flow.stateIn
 import ru.nvgsoft.vknewsclient.data.mapper.NewsFeedMapper
 import ru.nvgsoft.vknewsclient.data.network.ApiFactory
-import ru.nvgsoft.vknewsclient.domain.FeedPost
-import ru.nvgsoft.vknewsclient.domain.PostComment
-import ru.nvgsoft.vknewsclient.domain.StatisticItem
-import ru.nvgsoft.vknewsclient.domain.StatisticType
+import ru.nvgsoft.vknewsclient.domain.entity.FeedPost
+import ru.nvgsoft.vknewsclient.domain.entity.PostComment
+import ru.nvgsoft.vknewsclient.domain.entity.StatisticItem
+import ru.nvgsoft.vknewsclient.domain.entity.StatisticType
+import ru.nvgsoft.vknewsclient.domain.repository.NewsFeedRepository
 import ru.nvgsoft.vknewsclient.extensions.mergeWith
 
-class NewsFeedRepository(application: Application) {
+class NewsFeedRepositoryImpl(application: Application): NewsFeedRepository {
 
-    private val storage = VKPreferencesKeyValueStorage(application)
-    val token = VKAccessToken.restore(storage)
+//    private val storage = VKPreferencesKeyValueStorage(application)
+//    val token = VKAccessToken.restore(storage)
     private val coroutineScope = CoroutineScope(Dispatchers.Default)
     private val nextDataNeededEvents = MutableSharedFlow<Unit>(replay = 1)
     private val refreshedListFlow = MutableSharedFlow<List<FeedPost>>()
@@ -62,7 +61,7 @@ class NewsFeedRepository(application: Application) {
 
     private var nextFrom: String? = null
 
-    val posts: StateFlow<List<FeedPost>> = loadedListFlow
+    private val posts: StateFlow<List<FeedPost>> = loadedListFlow
         .mergeWith(refreshedListFlow)
         .stateIn(
             scope = coroutineScope,
@@ -70,11 +69,13 @@ class NewsFeedRepository(application: Application) {
             initialValue = feedPosts
         )
 
-    suspend fun loadNexData() {
+    override fun getPosts(): StateFlow<List<FeedPost>> = posts
+
+    override suspend fun loadNexData() {
         nextDataNeededEvents.emit(Unit)
     }
 
-    fun getComments(feedPost: FeedPost): Flow<List<PostComment>> = flow {
+    override fun getComments(feedPost: FeedPost): StateFlow<List<PostComment>> = flow {
         val response = apiService.getComments(
             token = getAccessToken(),
             ownerId = feedPost.communityId,
@@ -85,7 +86,11 @@ class NewsFeedRepository(application: Application) {
     }.retry {
         delay(RETRY_TIMEOUT_MILES)
         true
-    }
+    }.stateIn(
+        scope = coroutineScope,
+        started = SharingStarted.Lazily,
+        initialValue = listOf()
+    )
 
     private fun getAccessToken(): String {
         // return token?.accessToken ?: throw IllegalStateException("toke is null")
@@ -93,7 +98,7 @@ class NewsFeedRepository(application: Application) {
             ?: throw IllegalStateException("toke is null")
     }
 
-    suspend fun deletePost(feedPost: FeedPost) {
+    override suspend fun deletePost(feedPost: FeedPost) {
         apiService.ignorePost(
             token = getAccessToken(),
             ownerId = feedPost.communityId,
@@ -103,7 +108,7 @@ class NewsFeedRepository(application: Application) {
         refreshedListFlow.emit(feedPosts)
     }
 
-    suspend fun changedLikeStatus(feedPost: FeedPost) {
+    override suspend fun changedLikeStatus(feedPost: FeedPost) {
         val response = if (feedPost.isLiked) {
             apiService.deleteLike(
                 token = getAccessToken(),

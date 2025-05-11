@@ -16,14 +16,13 @@ import androidx.compose.material3.SwipeToDismissBoxValue
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import ru.nvgsoft.vknewsclient.domain.FeedPost
+import ru.nvgsoft.vknewsclient.domain.entity.FeedPost
 import ru.nvgsoft.vknewsclient.ui.theme.DarkBlue
 
 @Composable

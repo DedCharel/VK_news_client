@@ -1,6 +1,6 @@
 package ru.nvgsoft.vknewsclient.presentation.news
 
-import ru.nvgsoft.vknewsclient.domain.FeedPost
+import ru.nvgsoft.vknewsclient.domain.entity.FeedPost
 
 sealed class NewsFeedScreenState {
 

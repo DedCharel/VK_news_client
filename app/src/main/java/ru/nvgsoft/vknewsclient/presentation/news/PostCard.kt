@@ -28,9 +28,9 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import ru.nvgsoft.vknewsclient.R
-import ru.nvgsoft.vknewsclient.domain.FeedPost
-import ru.nvgsoft.vknewsclient.domain.StatisticItem
-import ru.nvgsoft.vknewsclient.domain.StatisticType
+import ru.nvgsoft.vknewsclient.domain.entity.FeedPost
+import ru.nvgsoft.vknewsclient.domain.entity.StatisticItem
+import ru.nvgsoft.vknewsclient.domain.entity.StatisticType
 import ru.nvgsoft.vknewsclient.ui.theme.DarkRed
 
 @Composable

@@ -1,7 +1,7 @@
 package ru.nvgsoft.vknewsclient.presentation.comments
 
-import ru.nvgsoft.vknewsclient.domain.FeedPost
-import ru.nvgsoft.vknewsclient.domain.PostComment
+import ru.nvgsoft.vknewsclient.domain.entity.FeedPost
+import ru.nvgsoft.vknewsclient.domain.entity.PostComment
 
 sealed class CommentsScreenState {
 
