@@ -1,17 +1,28 @@
 package ru.nvgsoft.vknewsclient.data.repository
 
 import android.app.Application
+import android.util.Log
+import com.vk.id.AccessToken
 import com.vk.id.VKID
+import com.vk.id.VKIDAuthFail
+import com.vk.id.VKIDUser
+import com.vk.id.auth.VKIDAuthCallback
+import com.vk.id.auth.VKIDAuthParams
+import com.vk.id.refresh.VKIDRefreshTokenCallback
+import com.vk.id.refresh.VKIDRefreshTokenFail
+import com.vk.id.refreshuser.VKIDGetUserCallback
+import com.vk.id.refreshuser.VKIDGetUserFail
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.retry
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
 import ru.nvgsoft.vknewsclient.data.mapper.NewsFeedMapper
 import ru.nvgsoft.vknewsclient.data.network.ApiFactory
 import ru.nvgsoft.vknewsclient.domain.entity.FeedPost
@@ -20,11 +31,12 @@ import ru.nvgsoft.vknewsclient.domain.entity.StatisticItem
 import ru.nvgsoft.vknewsclient.domain.entity.StatisticType
 import ru.nvgsoft.vknewsclient.domain.repository.NewsFeedRepository
 import ru.nvgsoft.vknewsclient.extensions.mergeWith
+import ru.nvgsoft.vknewsclient.domain.entity.AuthState
 
 class NewsFeedRepositoryImpl(application: Application): NewsFeedRepository {
 
-//    private val storage = VKPreferencesKeyValueStorage(application)
-//    val token = VKAccessToken.restore(storage)
+    val authState  = MutableStateFlow<AuthState>(AuthState.Initial)
+
     private val coroutineScope = CoroutineScope(Dispatchers.Default)
     private val nextDataNeededEvents = MutableSharedFlow<Unit>(replay = 1)
     private val refreshedListFlow = MutableSharedFlow<List<FeedPost>>()
@@ -133,8 +145,78 @@ class NewsFeedRepositoryImpl(application: Application): NewsFeedRepository {
         refreshedListFlow.emit(feedPosts)
     }
 
+    private val vkAuthCallback = object : VKIDAuthCallback {
+        override fun onAuth(accessToken: AccessToken) {
+            authState.value = AuthState.Authorized
+            Log.d("MainViewModel", "token: ${accessToken.token}")
+        }
+
+        override fun onFail(fail: VKIDAuthFail) {
+            authState.value = AuthState.NotAuthorized
+            Log.d("MainViewModel", "onFail")
+        }
+    }
+
+    override fun getAuthState(): StateFlow<AuthState> {
+        return authState
+    }
+
+    override suspend fun checkAuth(){
+        VKID.instance.getUserData(
+            callback = object : VKIDGetUserCallback {
+                override fun onSuccess(user: VKIDUser) {
+                    authState.value = AuthState.Authorized
+                }
+                override fun onFail(fail: VKIDGetUserFail) {
+                    when (fail) {
+                        is VKIDGetUserFail.FailedApiCall -> vkAuthorize()
+                        is VKIDGetUserFail.IdTokenTokenExpired ->   refreshToken()
+                        is VKIDGetUserFail.NotAuthenticated ->   vkAuthorize()
+                    }
+                }
+            }
+        )
+    }
+
+    private  fun vkAuthorize() {
+        coroutineScope.launch {
+            VKID.instance.authorize(
+                callback = vkAuthCallback,
+                params = VKIDAuthParams {
+                    scopes = setOf(VK_SCOPE_WALL, VK_SCOPE_FRIENDS)
+                }
+            )
+        }
+
+    }
+
+
+    private fun refreshToken() {
+            coroutineScope.launch {
+                VKID.instance.refreshToken(
+                    callback = object : VKIDRefreshTokenCallback {
+                        override fun onSuccess(token: AccessToken) {
+                            authState.value = AuthState.Authorized
+                        }
+
+                        override fun onFail(fail: VKIDRefreshTokenFail) {
+                            when (fail) {
+                                is VKIDRefreshTokenFail.FailedApiCall -> vkAuthorize()
+                                is VKIDRefreshTokenFail.FailedOAuthState -> vkAuthorize()
+                                is VKIDRefreshTokenFail.RefreshTokenExpired -> vkAuthorize()
+                                is VKIDRefreshTokenFail.NotAuthenticated -> vkAuthorize()
+                            }
+                        }
+                    }
+                )
+            }
+
+    }
+
     companion object {
         private const val RETRY_TIMEOUT_MILES = 3000L
+        private const val VK_SCOPE_WALL = "wall"
+        private const val VK_SCOPE_FRIENDS = "friends"
     }
 
 }

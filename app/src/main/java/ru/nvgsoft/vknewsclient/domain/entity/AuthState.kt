@@ -1,4 +1,4 @@
-package ru.nvgsoft.vknewsclient.presentation.main
+package ru.nvgsoft.vknewsclient.domain.entity
 
 sealed class AuthState {
 

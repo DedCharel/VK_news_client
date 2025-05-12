@@ -23,89 +23,34 @@ import com.vk.id.refresh.VKIDRefreshTokenFail
 import com.vk.id.refreshuser.VKIDGetUserCallback
 import com.vk.id.refreshuser.VKIDGetUserFail
 import com.vk.id.refreshuser.VKIDGetUserParams
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import ru.nvgsoft.vknewsclient.data.network.ApiFactory
+import ru.nvgsoft.vknewsclient.data.repository.NewsFeedRepositoryImpl
+import ru.nvgsoft.vknewsclient.domain.usecases.CheckAuthUseCase
+import ru.nvgsoft.vknewsclient.domain.usecases.GetAuthStateUseCase
 
 class MainViewModel(application: Application) : AndroidViewModel(application) {
 
-    private val _authState = MutableLiveData<AuthState>(AuthState.Initial)
-    val authState: LiveData<AuthState> = _authState
+
+    private val repository = NewsFeedRepositoryImpl(application)
+    private val checkAuthUseCase = CheckAuthUseCase(repository)
+    private val getAuthStateUseCase = GetAuthStateUseCase(repository)
+    val authState = getAuthStateUseCase()
 
     init {
         viewModelScope.launch {
-            VKID.instance.getUserData(
-                callback = object : VKIDGetUserCallback {
-                    override fun onSuccess(user: VKIDUser) {
-                        _authState.value = AuthState.Authorized
-                    }
-                    override fun onFail(fail: VKIDGetUserFail) {
-                        when (fail) {
-                            is VKIDGetUserFail.FailedApiCall -> vkAuthorize()
-                            is VKIDGetUserFail.IdTokenTokenExpired ->   refreshToken()
-                            is VKIDGetUserFail.NotAuthenticated ->   vkAuthorize()
-                        }
-                    }
-                }
-            )
+            checkAuthUseCase()
 
         }
 
     }
 
-    private val vkAuthCallback = object : VKIDAuthCallback {
-        override fun onAuth(accessToken: AccessToken) {
-            _authState.value = AuthState.Authorized
-            Log.d("MainViewModel", "token: ${accessToken.token}")
-        }
-
-        override fun onFail(fail: VKIDAuthFail) {
-            _authState.value = AuthState.NotAuthorized
-            Log.d("MainViewModel", "onFail")
-        }
-    }
-
-    private fun vkAuthorize() {
-        viewModelScope.launch {
-            Log.d("MainViewModel", "Init")
-            VKID.instance.authorize(
-                callback = vkAuthCallback,
-                params = VKIDAuthParams {
-                    scopes = setOf(VK_SCOPE_WALL, VK_SCOPE_FRIENDS)
-                }
-            )
-            Log.d("MainViewModel", "InitEnd")
-        }
-        //     }
-    }
 
 
-    private fun refreshToken() {
-        viewModelScope.launch {
-            VKID.instance.refreshToken(
-                callback = object : VKIDRefreshTokenCallback {
-                    override fun onSuccess(token: AccessToken) {
-                        _authState.value = AuthState.Authorized
-                    }
-
-                    override fun onFail(fail: VKIDRefreshTokenFail) {
-                        when (fail) {
-                            is VKIDRefreshTokenFail.FailedApiCall -> vkAuthorize()
-                            is VKIDRefreshTokenFail.FailedOAuthState -> vkAuthorize()
-                            is VKIDRefreshTokenFail.RefreshTokenExpired -> vkAuthorize()
-                            is VKIDRefreshTokenFail.NotAuthenticated -> vkAuthorize()
-                        }
-                    }
-                }
-            )
-        }
-
-    }
 
 
-   companion object {
-        private const val VK_SCOPE_WALL = "wall"
-        private const val VK_SCOPE_FRIENDS = "friends"
-    }
 
 }
 
