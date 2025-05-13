@@ -5,4 +5,8 @@ plugins {
     alias(libs.plugins.kotlin.parcelize) apply false
 
     id("vkid.manifest.placeholders") version "1.1.0" apply true
+
+    alias(libs.plugins.ksp) apply false
+
+    alias(libs.plugins.compose.compiler) apply false
 }
