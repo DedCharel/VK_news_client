@@ -1,8 +1,7 @@
 package ru.nvgsoft.vknewsclient.presentation.news
 
-import android.app.Application
 import android.util.Log
-import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -11,25 +10,27 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.launch
-import ru.nvgsoft.vknewsclient.data.repository.NewsFeedRepositoryImpl
 import ru.nvgsoft.vknewsclient.domain.entity.FeedPost
 import ru.nvgsoft.vknewsclient.domain.usecases.ChangedLikeStatusUseCase
 import ru.nvgsoft.vknewsclient.domain.usecases.DeletePostUseCase
 import ru.nvgsoft.vknewsclient.domain.usecases.GetPostsUseCase
 import ru.nvgsoft.vknewsclient.domain.usecases.LoadNextDataUseCase
 import ru.nvgsoft.vknewsclient.extensions.mergeWith
+import javax.inject.Inject
 
-class NewsFeedViewModel(application: Application) : AndroidViewModel(application) {
+class NewsFeedViewModel @Inject constructor(
+    private val getPostsUseCase: GetPostsUseCase,
+    private val loadNextDataUseCase: LoadNextDataUseCase,
+    private val deletePostUseCase: DeletePostUseCase,
+    private val changedLikeStatusUseCase: ChangedLikeStatusUseCase
+) : ViewModel() {
 
     private val exceptionHandler = CoroutineExceptionHandler{_, _ ->
         Log.d("NewsFeedViewModel", "Exception caught by exception handler ")
     }
-    private val repository = NewsFeedRepositoryImpl(application)
 
-    private val getPostsUseCase = GetPostsUseCase(repository)
-    private val loadNextDataUseCase = LoadNextDataUseCase(repository)
-    private val deletePostUseCase = DeletePostUseCase(repository)
-    private val changedLikeStatusUseCase = ChangedLikeStatusUseCase(repository)
+
+
 
     private val postsFlow = getPostsUseCase()
 

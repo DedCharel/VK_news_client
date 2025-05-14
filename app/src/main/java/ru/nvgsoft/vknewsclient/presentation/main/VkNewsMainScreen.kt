@@ -20,12 +20,13 @@ import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.compose.currentBackStackEntryAsState
 import ru.nvgsoft.vknewsclient.navigation.AppNavGraph
 import ru.nvgsoft.vknewsclient.navigation.rememberNavigationState
+import ru.nvgsoft.vknewsclient.presentation.VIewModelFactory
 import ru.nvgsoft.vknewsclient.presentation.comments.CommentsScreen
 import ru.nvgsoft.vknewsclient.presentation.news.NewsFeedScreen
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
-fun MainScreen() {
+fun MainScreen(viewModelFactory: VIewModelFactory) {
     val navigationState = rememberNavigationState()
 
 
@@ -68,6 +69,7 @@ fun MainScreen() {
             navHostController = navigationState.navHostController,
             newsFeedScreenContent = {
                 NewsFeedScreen(
+                    viewModelFactory = viewModelFactory,
                     paddingValues = paddingValues,
                     onCommentClickListener = {
 
@@ -77,6 +79,7 @@ fun MainScreen() {
             },
             commentsScreenContent = {feedPost ->
                 CommentsScreen(
+                    viewModelFactory = viewModelFactory,
                     onBackPressed = {
                         navigationState.navHostController.popBackStack()
                     },
