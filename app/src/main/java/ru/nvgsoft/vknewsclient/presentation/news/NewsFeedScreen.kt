@@ -23,12 +23,12 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import ru.nvgsoft.vknewsclient.domain.entity.FeedPost
-import ru.nvgsoft.vknewsclient.presentation.VIewModelFactory
+import ru.nvgsoft.vknewsclient.presentation.ViewModelFactory
 import ru.nvgsoft.vknewsclient.ui.theme.DarkBlue
 
 @Composable
 fun NewsFeedScreen(
-    viewModelFactory: VIewModelFactory,
+    viewModelFactory: ViewModelFactory,
     paddingValues: PaddingValues,
     onCommentClickListener: (FeedPost) -> Unit
 ) {
