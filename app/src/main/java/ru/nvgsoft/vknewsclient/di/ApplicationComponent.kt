@@ -3,9 +3,7 @@ package ru.nvgsoft.vknewsclient.di
 import android.content.Context
 import dagger.BindsInstance
 import dagger.Component
-import ru.nvgsoft.vknewsclient.domain.entity.FeedPost
-import ru.nvgsoft.vknewsclient.presentation.main.MainActivity
-import javax.inject.Inject
+import ru.nvgsoft.vknewsclient.presentation.ViewModelFactory
 
 @ApplicationScope
 @Component(modules = [
@@ -14,7 +12,7 @@ import javax.inject.Inject
 ])
 interface ApplicationComponent {
 
-    fun inject(mainActivity: MainActivity)
+    fun getViewModelFactory(): ViewModelFactory
 
     fun getCommentsScreenComponentFactory(): CommentsScreenComponent.Factory
 
